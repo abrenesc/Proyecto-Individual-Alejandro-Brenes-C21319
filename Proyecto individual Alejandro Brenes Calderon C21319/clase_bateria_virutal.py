@@ -8,6 +8,16 @@ from pygame import mixer
 
 class Bateria_virtual:
     def __init__(self, ancho=1400, alto=800, colores=None):
+        
+        """
+        Inicializa la clase Bateria_virtual.
+        
+        Args:
+            ancho (int): Ancho de la ventana de la aplicación. Default de 1400.
+            alto (int): Alto de la ventana de la aplicación. Default de 800.
+            colores (dict): Diccionario con los colores utilizados en la aplicación. Si no se proporciona, se usan los valores por defecto.
+        """
+        
         pygame.init()
         self.ancho = ancho
         self.alto = alto
@@ -56,6 +66,11 @@ class Bateria_virtual:
         self.corriendo = True
 
     def cargar_ritmos_guardados(self):
+        
+        """
+        Carga los ritmos guardados desde un archivo de texto.
+        """
+        
         try:
             with open('saved_beats.txt', 'r') as file:
                 for line in file:
@@ -64,6 +79,19 @@ class Bateria_virtual:
             pass
 
     def dibujar_cuadricula(self, clicks, beat, actives):
+        
+        """
+        Dibuja la cuadrícula de la interfaz de la batería.
+
+        Args:
+            clicks (list): Matriz que representa los estados de cada celda de la cuadrícula.
+            beat (int): El beat actual que se está reproduciendo.
+            actives (list): Lista que indica qué instrumentos están activos.
+
+        Returns:
+            cuadricula (list): Lista de tuplas que contienen los rectángulos de la cuadrícula y sus coordenadas.
+        """        
+        
         cuadricula = []
         left_box = pygame.draw.rect(self.pantalla, self.colores['blanco'], [0, 0, 200, self.alto - 200], 3)
         bottom_box = pygame.draw.rect(self.pantalla, self.colores['blanco'], [0, 0, self.ancho, 200], 3)
@@ -107,6 +135,11 @@ class Bateria_virtual:
         return cuadricula
 
     def tocar_instrumentos(self):
+        
+        """
+        Reproduce los sonidos de los instrumentos activos en el beat actual.
+        """        
+        
         for i in range(len(self.pulsados)):
             if self.pulsados[i][self.beat_activos] == 1 and self.lista_activos[i] == 1:
                 if i == 0:
@@ -123,6 +156,18 @@ class Bateria_virtual:
                     self.tom.play()
 
     def menu_guardados(self, beat_name, escribiendo):
+        
+        """
+        Dibuja el menú de guardado de ritmos.
+
+        Args:
+            beat_name (str): Nombre del ritmo que se está guardando.
+            escribiendo (bool): Indica si el usuario está escribiendo el nombre del ritmo.
+
+        Returns:
+            tuple: Botones de salida y guardado, nombre del ritmo y rectángulo de entrada de texto.
+        """        
+        
         pygame.draw.rect(self.pantalla, self.colores['negro'], [0, 0, self.ancho, self.alto])
         menu_text = self.label_font.render('Nombre del ritmo', True, self.colores['blanco'])
         self.pantalla.blit(menu_text, (400, 40))
@@ -140,6 +185,21 @@ class Bateria_virtual:
         return exit_btn, saving_btn, beat_name, entry_rect
 
     def menu_cargados(self, index):
+        
+        """
+        Método para manejar el menú de ritmos guardados. Permite al usuario ver y seleccionar ritmos 
+        previamente guardados.
+    
+        Manejo de eventos:
+        - Detecta clics del ratón y determina si un ritmo guardado ha sido seleccionado.
+        - Carga el ritmo seleccionado en la secuencia de beats actual.
+    
+        Interfaz de usuario:
+        - Dibuja el menú de ritmos guardados en la pantalla.
+        - Muestra los nombres de los ritmos guardados y permite al usuario desplazarse por la lista si hay 
+          más ritmos de los que caben en la pantalla.
+        """        
+        
         cargado_pulsados = []
         cargado_beats = 0
         cargado_bpm = 0
@@ -167,6 +227,24 @@ class Bateria_virtual:
         return exit_btn, loading_btn, cargado_pulsados, cargado_beats, cargado_bpm
 
     def main_loop(self):
+        
+        """
+        Método principal del bucle de la aplicación. Maneja eventos, actualiza el estado de la aplicación 
+        y renderiza la pantalla en cada iteración del bucle. Este método se ejecuta continuamente mientras
+        la aplicación esté corriendo.
+    
+        Manejo de eventos:
+        - Detecta eventos de cierre de ventana y teclas presionadas.
+        - Cambia el estado de reproducción y la velocidad de BPM en respuesta a entradas del usuario.
+    
+        Actualización del estado:
+        - Actualiza el índice del beat activo basado en el tiempo y el BPM.
+        - Reproduce sonidos si el beat activo coincide con los beats pulsados.
+    
+        Renderización:
+        - Dibuja la interfaz de usuario y los beats en la pantalla.
+        """
+        
         while self.corriendo:
             self.timer.tick(self.fps)
             self.pantalla.fill(self.colores['negro'])
@@ -296,6 +374,14 @@ class Bateria_virtual:
         pygame.quit()
 
     def guardar_ritmo(self):
+        
+        """
+        Guarda el ritmo actual en el archivo de ritmos guardados.
+
+        Args:
+            nombre (str): Nombre del ritmo a guardar.
+        """        
+        
         if self.beat_name:
             with open('saved_beats.txt', 'w') as file:
                 self.saved_beats.append(
@@ -304,6 +390,14 @@ class Bateria_virtual:
                     file.write(str(self.saved_beats[i]))
 
     def cargar_ritmo(self, index):
+        
+        """
+        Dibuja el menú de carga de ritmos guardados.
+
+        Args:
+            index (int): Índice del ritmo seleccionado para cargar.
+        """    
+        
         self.pulsados = []
         if 0 <= index < len(self.saved_beats):
             self.beat_name = self.saved_beats[index]
@@ -322,6 +416,203 @@ class Bateria_virtual:
             self.pulsados = beat_clicks
             self.beats = beat_beats
             self.bpm = beat_bpm
+
+    #A continuación, los métodos get set y str de la clase
+    
+    def get_ancho(self):
+        return self.ancho
+
+    def set_ancho(self, nuevo_ancho):
+        self.ancho = nuevo_ancho
+
+    def get_alto(self):
+        return self.alto
+
+    def set_alto(self, nuevo_alto):
+        self.alto = nuevo_alto
+
+    def get_colores(self):
+        return self.colores
+
+    def set_colores(self, nuevos_colores):
+        self.colores = nuevos_colores
+
+    def get_longitud_activa(self):
+        return self.longitud_activa
+
+    def set_longitud_activa(self, nueva_longitud_activa):
+        self.longitud_activa = nueva_longitud_activa
+
+    def get_beat_activos(self):
+        return self.beat_activos
+
+    def set_beat_activos(self, nuevos_beat_activos):
+        self.beat_activos = nuevos_beat_activos
+
+    def get_hi_hat(self):
+        return self.hi_hat
+
+    def set_hi_hat(self, nuevo_hi_hat):
+        self.hi_hat = nuevo_hi_hat
+
+    def get_snare(self):
+        return self.snare
+
+    def set_snare(self, nuevo_snare):
+        self.snare = nuevo_snare
+
+    def get_kick(self):
+        return self.kick
+
+    def set_kick(self, nuevo_kick):
+        self.kick = nuevo_kick
+
+    def get_crash(self):
+        return self.crash
+
+    def set_crash(self, nuevo_crash):
+        self.crash = nuevo_crash
+
+    def get_clap(self):
+        return self.clap
+
+    def set_clap(self, nuevo_clap):
+        self.clap = nuevo_clap
+
+    def get_tom(self):
+        return self.tom
+
+    def set_tom(self, nuevo_tom):
+        self.tom = nuevo_tom
+
+    def get_pantalla(self):
+        return self.pantalla
+
+    def set_pantalla(self, nueva_pantalla):
+        self.pantalla = nueva_pantalla
+
+    def get_label_font(self):
+        return self.label_font
+
+    def set_label_font(self, nueva_label_font):
+        self.label_font = nueva_label_font
+
+    def get_medium_font(self):
+        return self.medium_font
+
+    def set_medium_font(self, nueva_medium_font):
+        self.medium_font = nueva_medium_font
+
+    def get_cambio_en_beats(self):
+        return self.cambio_en_beats
+
+    def set_cambio_en_beats(self, nuevo_cambio_en_beats):
+        self.cambio_en_beats = nuevo_cambio_en_beats
+
+    def get_timer(self):
+        return self.timer
+
+    def set_timer(self, nuevo_timer):
+        self.timer = nuevo_timer
+
+    def get_fps(self):
+        return self.fps
+
+    def set_fps(self, nuevo_fps):
+        self.fps = nuevo_fps
+
+    def get_beats(self):
+        return self.beats
+
+    def set_beats(self, nuevos_beats):
+        self.beats = nuevos_beats
+
+    def get_bpm(self):
+        return self.bpm
+
+    def set_bpm(self, nuevo_bpm):
+        if nuevo_bpm > 0:
+            self.bpm = nuevo_bpm
+        else:
+            raise ValueError("BPM debe ser un valor positivo.")
+
+    def get_instrumentos(self):
+        return self.instrumentos
+
+    def set_instrumentos(self, nuevos_instrumentos):
+        self.instrumentos = nuevos_instrumentos
+
+    def get_tocando(self):
+        return self.tocando
+
+    def set_tocando(self, nuevo_tocando):
+        self.tocando = nuevo_tocando
+
+    def get_pulsados(self):
+        return self.pulsados
+
+    def set_pulsados(self, nuevos_pulsados):
+        self.pulsados = nuevos_pulsados
+
+    def get_lista_activos(self):
+        return self.lista_activos
+
+    def set_lista_activos(self, nueva_lista_activos):
+        self.lista_activos = nueva_lista_activos
+
+    def get_menu_guardar(self):
+        return self.menu_guardar
+
+    def set_menu_guardar(self, nuevo_menu_guardar):
+        self.menu_guardar = nuevo_menu_guardar
+
+    def get_load_menu(self):
+        return self.load_menu
+
+    def set_load_menu(self, nuevo_load_menu):
+        self.load_menu = nuevo_load_menu
+
+    def get_saved_beats(self):
+        return self.saved_beats
+
+    def set_saved_beats(self, nuevos_saved_beats):
+        self.saved_beats = nuevos_saved_beats
+
+    def get_beat_name(self):
+        return self.beat_name
+
+    def set_beat_name(self, nuevo_beat_name):
+        self.beat_name = nuevo_beat_name
+
+    def get_escribiendo(self):
+        return self.escribiendo
+
+    def set_escribiendo(self, nuevo_escribiendo):
+        self.escribiendo = nuevo_escribiendo
+
+    def get_index(self):
+        return self.index
+
+    def set_index(self, nuevo_index):
+        self.index = nuevo_index
+
+    def get_corriendo(self):
+        return self.corriendo
+
+    def set_corriendo(self, nuevo_corriendo):
+        self.corriendo = nuevo_corriendo
+
+    def __str__(self):
+        return (f'Bateria_virtual(ancho={self.ancho}, alto={self.alto}, colores={self.colores}, '
+                f'longitud_activa={self.longitud_activa}, beat_activos={self.beat_activos}, '
+                f'hi_hat={self.hi_hat}, snare={self.snare}, kick={self.kick}, crash={self.crash}, '
+                f'clap={self.clap}, tom={self.tom}, pantalla={self.pantalla}, label_font={self.label_font}, '
+                f'medium_font={self.medium_font}, cambio_en_beats={self.cambio_en_beats}, timer={self.timer}, '
+                f'fps={self.fps}, beats={self.beats}, bpm={self.bpm}, instrumentos={self.instrumentos}, '
+                f'tocando={self.tocando}, pulsados={self.pulsados}, lista_activos={self.lista_activos}, '
+                f'menu_guardar={self.menu_guardar}, load_menu={self.load_menu}, saved_beats={self.saved_beats}, '
+                f'beat_name={self.beat_name}, escribiendo={self.escribiendo}, index={self.index}, '
+                f'corriendo={self.corriendo})')
 
 if __name__ == "__main__":
     bateria = Bateria_virtual()
